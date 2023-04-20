@@ -1,4 +1,4 @@
-#include<bits/stdc++.h>
+ #include<bits/stdc++.h>
 #include<unistd.h>
 #include "working.h"
 #include "Map.h"
@@ -30,7 +30,7 @@ int GetDestinationSquare(){
     for(int row = 0; row < MAP_HEIGHT; row++){
         for(int col = 0; col < MAP_WIDTH; col++){
             if(MAP[row][col] == 'x' || MAP[row][col] == 'O'){
-                dest_squares[count++].first = row;
+                dest_squares[count].first = row;
                 dest_squares[count++].second = col;
             }
         }
@@ -39,7 +39,7 @@ int GetDestinationSquare(){
     return count ;
 }
 
-void GetPosition(int *pos_x, int *pos_y)
+void GetPosition(int &pos_x, int &pos_y)
 {
     for(int row = 0; row < MAP_HEIGHT; row++)                           // loop ower MAP rows
     {
@@ -48,10 +48,115 @@ void GetPosition(int *pos_x, int *pos_y)
             
             if(MAP[row][col] == '@')                                        // if current cell on the MAP contains player
             {
-                *pos_x = col;                                           // store player's x coordinate
-                *pos_y = row;                                           // store player's y coordinate
+                pos_x = row;                                           // store player's x coordinate
+                pos_y = col;                                           // store player's y coordinate
             }
         }
+    }
+}
+
+void MoveCharacter(int &pos_x, int &pos_y, char x)
+{
+    if(x=='w' && MAP[pos_x-1][pos_y]!='#')
+    {
+        if(((MAP[pos_x-1][pos_y] == 'B') || (MAP[pos_x-1][pos_y] == 'O')) )
+             {
+                MAP[pos_x][pos_y]=' ';
+                pos_x-=1;
+
+                if(MAP[pos_x-1][pos_y]==' ')
+                    MAP[pos_x-1][pos_y]='B';
+
+                else if(MAP[pos_x-1][pos_y]=='x')
+                    MAP[pos_x-1][pos_y]='O';
+                
+                else
+                    pos_x+=1;
+                MAP[pos_x][pos_y]='@';
+             }
+             else
+             {
+                MAP[pos_x][pos_y]=' ';
+                pos_x-=1;
+                MAP[pos_x][pos_y]='@';
+             }
+    }
+
+    else if(x=='s' && MAP[pos_x+1][pos_y]!='#')
+    {
+        if(((MAP[pos_x+1][pos_y] == 'B') ||                   // if player hits the box
+            (MAP[pos_x+1][pos_y] == 'O')))
+             {
+                MAP[pos_x][pos_y]=' ';
+                pos_x+=1;
+
+                if(MAP[pos_x+1][pos_y]==' ')
+                    MAP[pos_x+1][pos_y]='B';
+
+                else if(MAP[pos_x+1][pos_y]=='x')
+                    MAP[pos_x+1][pos_y]='O';
+                
+                else
+                    pos_x-=1;
+                MAP[pos_x][pos_y]='@';
+             }
+             else
+             {
+                MAP[pos_x][pos_y]=' ';
+                pos_x+=1;
+                MAP[pos_x][pos_y]='@';
+             }
+    }
+
+    else if(x=='a' && MAP[pos_x][pos_y-1]!='#')
+    {
+        if(((MAP[pos_x][pos_y-1] == 'B') ||                   // if player hits the box
+            (MAP[pos_x][pos_y-1] == 'O')))
+             {
+                MAP[pos_x][pos_y]=' ';
+                pos_y-=1;
+
+                if(MAP[pos_x][pos_y-1]==' ')
+                    MAP[pos_x][pos_y-1]='B';
+
+                else if(MAP[pos_x][pos_y-1]=='x')
+                    MAP[pos_x][pos_y-1]='O';
+                
+                else
+                    pos_y+=1;
+                MAP[pos_x][pos_y]='@';
+             }
+             else
+             {
+                MAP[pos_x][pos_y]=' ';
+                pos_y-=1;
+                MAP[pos_x][pos_y]='@';
+             }
+    }
+    else if(x=='d' && MAP[pos_x][pos_y+1]!='#')
+    {
+        if(((MAP[pos_x][pos_y+1] == 'B') ||                   // if player hits the box
+            (MAP[pos_x][pos_y+1] == 'O')))
+             {
+                MAP[pos_x][pos_y]=' ';
+                pos_y+=1;
+
+                if(MAP[pos_x][pos_y+1]==' ')
+                    MAP[pos_x][pos_y+1]='B';
+
+                else if(MAP[pos_x][pos_y+1]=='x')
+                    MAP[pos_x][pos_y+1]='O';
+                
+                else
+                    pos_y-=1;
+                MAP[pos_x][pos_y]='@';
+             }
+             else
+             {
+                MAP[pos_x][pos_y]=' ';
+                pos_y+=1;
+                MAP[pos_x][pos_y]='@';
+             }
     }
 }
 
@@ -94,7 +199,8 @@ void GetPosition(int *pos_x, int *pos_y)
 // } 
 
 
-int main(){
+int main()
+{
     
     int key;
     int pos_x, pos_y;
@@ -106,6 +212,36 @@ int main(){
     int dest_num = GetDestinationSquare();
     cout<<dest_num<<endl;
     PrintMap(MAP);
+    GetPosition(pos_x,pos_y);
+
+
+    while(true)
+    {
+        char x=getch();
+
+        MoveCharacter(pos_x,pos_y,x);
+
+        dest_count = 0;
+
+        for(int i=0;i<10;i++){
+            if(MAP[dest_squares[i].first][dest_squares[i].second] == 'O') dest_count++;
+
+            if(MAP[dest_squares[i].first][dest_squares[i].second] == ' ')
+                MAP[dest_squares[i].first][dest_squares[i].second] = 'x';
+        }
+        
+        PrintMap(MAP);
+
+        if(dest_num == dest_count)
+        {
+            cout<<"YOU WIN";
+            getch();
+            break;
+        }
+
+        if(x == 65)
+            exit(0);
+    }
 
     // for(int i=0;i<10;i++){
     //     for(int j=0;j<14;j++)
@@ -152,7 +288,7 @@ int main(){
     //     }
     // }
 
-    // cout<<"Exiting...";
+    cout<<"Exiting...";
 
     
     // system("clear");

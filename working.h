@@ -81,7 +81,7 @@ void RefreshScreen()
 
 void PrintMap(char** MAP)
 {
-    // RefreshScreen(); 
+    RefreshScreen(); 
     for (int row = 0; row < MAP_HEIGHT; row++)
     {
         for (int col = 0; col < MAP_WIDTH-1; col++)
